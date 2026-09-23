@@ -13,7 +13,7 @@ graph TD
 
     subgraph Backend Pipeline [FastAPI Core Services]
         StreamGen --> WS[WebSocket /ws/telemetry & REST]
-        WS --> SafetyEng[Rule-Based Safety Engine (0-100 Score)]
+        WS --> SafetyEng["Rule-Based Safety Engine (0-100 Score)"]
         WS --> AnomEng[ML Anomaly Detection (Isolation Forest)]
         SafetyEng --> RecEng[Contextual Recommendation Engine]
         AnomEng --> RecEng

@@ -1,4 +1,4 @@
-# CAT OperatorIQ 🚜⚡
+# CAT OperatorIQ 
 > **"Your intelligent companion for safer and smarter machine operations."**
 
 An industrial-grade operator assistance command center and fleet intelligence system engineered for Caterpillar heavy construction machinery. Built for the Caterpillar Software Engineer Hackathon.
@@ -15,7 +15,7 @@ An industrial-grade operator assistance command center and fleet intelligence sy
 
 ---
 
-## 🌟 Key Capabilities
+## Key Capabilities
 
 1. **Real-Time 360° Proximity Hazard Radar**: Interactive polar-to-Cartesian sensor radar tracking surrounding personnel across Critical (<3.0m), Warning (3–6m), and Safe (>6m) perimeter zones.
 2. **Transparent 8-Rule Safety Scoring Engine**: Deterministic multi-condition evaluation calculating an explainable 0–100 risk score across seatbelt, proximity, fatigue, idling, engine temperature, vibration, repeat events, and adverse weather conditions.
