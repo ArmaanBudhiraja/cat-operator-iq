@@ -1,0 +1,51 @@
+machine_id,machine_type,machine_model,machine_age_years,engine_hours,maintenance_age_days,fuel_capacity,current_fuel_level,hydraulic_pressure,engine_temperature,engine_rpm,vibration_level,coolant_temperature,oil_pressure,battery_voltage,load_weight,operating_hours,location,status
+EXC001,Excavator,CAT 336 Heavy Duty,2.4,2150.0,28,450.0,78.5,282.0,88.5,1850.0,1.75,85.0,43.5,24.8,14.5,8.5,Site Alpha - Sector 4 Foundation,Operating
+WHE002,Wheel Loader,CAT 980M Quarry,1.1,809.7,119,320.0,78.9,269.2,82.7,1820.0,1.54,79.2,43.2,24.6,15.9,8.0,Site Alpha - Sector 1 Quarry,Operating
+DOZ003,Dozer,CAT D6 XE Electric,2.4,2317.1,26,320.0,63.8,281.0,86.7,1820.0,1.66,83.2,42.9,24.6,12.7,8.0,Site Alpha - Sector 4 Foundation,Operating
+GRA004,Grader,CAT 140 Motor Grader,4.9,3638.9,77,320.0,61.3,292.8,84.8,1820.0,1.93,81.3,43.0,24.6,8.0,8.0,Site Beta - North Overpass,Idle
+DUM005,Dump Truck,CAT 745 Extreme Haul,10.8,7582.7,16,450.0,42.6,285.0,91.2,1820.0,2.69,87.7,38.4,24.6,20.2,8.0,Site Beta - North Overpass,Operating
+COM006,Compactor,CAT CS56B Soil,4.5,4601.8,91,320.0,33.5,288.2,89.2,1820.0,2.17,85.7,43.9,24.6,8.6,8.0,Site Beta - North Overpass,Operating
+EXC007,Excavator,CAT 320 Next Gen,3.2,3519.2,30,450.0,96.0,278.3,86.4,1820.0,2.01,82.9,43.6,24.6,14.6,8.0,Site Alpha - Sector 4 Foundation,Operating
+WHE008,Wheel Loader,CAT 966M,6.4,6642.0,22,320.0,68.1,291.3,89.0,1820.0,2.6,85.5,39.6,24.6,20.4,8.0,Site Alpha - Sector 1 Quarry,Operating
+DOZ009,Dozer,CAT D8T Heavy,2.8,2454.0,91,320.0,51.7,281.6,85.3,1820.0,1.81,81.8,45.1,24.6,20.4,8.0,Site Beta - East Trenching Zone,Operating
+GRA010,Grader,CAT 160M AWD,3.4,2696.8,59,320.0,34.8,278.6,86.4,1820.0,1.95,82.9,43.7,24.6,9.2,8.0,Site Beta - East Trenching Zone,Idle
+DUM011,Dump Truck,CAT 745 Extreme Haul,0.6,535.1,20,450.0,46.2,275.8,86.6,1820.0,1.51,83.1,46.5,24.6,12.0,8.0,Site Delta - Highway Interchange,Idle
+COM012,Compactor,CAT CB68B Asphalt,1.6,1269.5,29,320.0,95.0,277.8,84.7,1820.0,1.76,81.2,42.9,24.6,11.6,8.0,Site Alpha - Sector 4 Foundation,Operating
+EXC013,Excavator,CAT 320 Next Gen,3.2,3497.4,67,450.0,97.4,283.1,87.3,1820.0,1.88,83.8,41.7,24.6,21.2,8.0,Site Beta - East Trenching Zone,Operating
+WHE014,Wheel Loader,CAT 950M High Lift,3.6,3395.1,113,320.0,44.7,289.6,86.4,1820.0,1.87,82.9,43.5,24.6,16.4,8.0,Site Alpha - Sector 1 Quarry,Operating
+DOZ015,Dozer,CAT D10 Dozer,2.7,2171.1,39,320.0,45.3,277.0,87.5,1820.0,1.94,84.0,43.8,24.6,15.5,8.0,Site Delta - Highway Interchange,Operating
+GRA016,Grader,CAT 140 Motor Grader,3.2,2982.5,102,320.0,33.0,265.9,84.9,1820.0,1.55,81.4,42.9,24.6,8.5,8.0,Site Delta - Highway Interchange,Operating
+DUM017,Dump Truck,CAT 745 Extreme Haul,1.7,1823.5,15,450.0,79.2,274.2,84.0,1820.0,1.68,80.5,42.3,24.6,9.1,8.0,Site Alpha - Sector 1 Quarry,Operating
+COM018,Compactor,CAT CS56B Soil,1.2,1168.0,73,320.0,75.0,286.9,86.4,1820.0,1.65,82.9,44.5,24.6,20.1,8.0,Site Gamma - River Basin Basin Prep,Operating
+EXC019,Excavator,CAT 336 Heavy Duty,4.5,4088.3,84,450.0,86.9,285.7,87.8,1820.0,2.18,84.3,42.8,24.6,17.5,8.0,Site Gamma - River Basin Basin Prep,Operating
+WHE020,Wheel Loader,CAT 980M Quarry,3.4,3403.7,11,320.0,30.1,278.8,86.2,1820.0,2.06,82.7,43.2,24.6,18.6,8.0,Site Alpha - Sector 4 Foundation,Operating
+DOZ021,Dozer,CAT D6 XE Electric,1.4,1088.2,17,320.0,73.1,286.0,85.0,1820.0,1.7,81.5,42.5,24.6,18.9,8.0,Site Gamma - River Basin Basin Prep,Operating
+GRA022,Grader,CAT 140 Motor Grader,0.8,803.5,78,320.0,81.3,276.8,84.2,1820.0,1.77,80.7,43.1,24.6,10.4,8.0,Site Alpha - Sector 4 Foundation,Operating
+DUM023,Dump Truck,CAT 730 Articulated,4.9,5286.7,68,450.0,72.2,287.7,87.7,1820.0,2.03,84.2,39.9,24.6,21.6,8.0,Site Gamma - River Basin Basin Prep,Maintenance
+COM024,Compactor,CAT CS56B Soil,10.9,10898.5,103,320.0,47.2,276.3,93.7,1820.0,2.55,90.2,39.8,24.6,14.6,8.0,Site Delta - Highway Interchange,Idle
+EXC025,Excavator,CAT 320 Next Gen,9.2,6816.1,109,450.0,35.6,285.7,89.7,1820.0,2.67,86.2,38.3,24.6,17.2,8.0,Site Beta - North Overpass,Operating
+WHE026,Wheel Loader,CAT 950M High Lift,1.5,1620.5,112,320.0,80.7,272.6,84.2,1820.0,1.4,80.7,45.5,24.6,20.2,8.0,Site Gamma - River Basin Basin Prep,Operating
+DOZ027,Dozer,CAT D6 XE Electric,4.3,3977.9,112,320.0,82.8,278.2,87.0,1820.0,2.09,83.5,42.7,24.6,19.8,8.0,Site Gamma - River Basin Basin Prep,Operating
+GRA028,Grader,CAT 140 Motor Grader,4.8,4562.3,68,320.0,46.8,292.0,87.0,1820.0,2.15,83.5,44.1,24.6,11.2,8.0,Site Gamma - River Basin Basin Prep,Operating
+DUM029,Dump Truck,CAT 730 Articulated,1.0,960.6,6,450.0,34.9,279.8,86.2,1820.0,1.52,82.7,44.1,24.6,14.7,8.0,Site Beta - North Overpass,Operating
+COM030,Compactor,CAT CB68B Asphalt,3.2,2613.3,49,320.0,37.0,283.5,86.9,1820.0,1.92,83.4,42.3,24.6,8.3,8.0,Site Beta - East Trenching Zone,Operating
+EXC031,Excavator,CAT 320 Next Gen,2.5,1960.3,37,450.0,36.0,263.7,85.8,1820.0,1.77,82.3,43.8,24.6,8.5,8.0,Site Delta - Highway Interchange,Operating
+WHE032,Wheel Loader,CAT 980M Quarry,0.7,601.1,70,320.0,94.7,277.8,85.3,1820.0,1.72,81.8,44.7,24.6,20.5,8.0,Site Beta - East Trenching Zone,Operating
+DOZ033,Dozer,CAT D6 XE Electric,3.2,3029.3,99,320.0,84.5,285.5,86.8,1820.0,2.16,83.3,43.6,24.6,19.4,8.0,Site Beta - East Trenching Zone,Operating
+GRA034,Grader,CAT 160M AWD,0.8,846.3,8,320.0,41.2,279.8,85.3,1820.0,1.8,81.8,43.8,24.6,18.1,8.0,Site Alpha - Sector 4 Foundation,Operating
+DUM035,Dump Truck,CAT 745 Extreme Haul,3.2,3072.4,29,450.0,74.8,275.4,86.9,1820.0,1.84,83.4,43.7,24.6,15.8,8.0,Site Beta - North Overpass,Operating
+COM036,Compactor,CAT CB68B Asphalt,4.3,3402.9,100,320.0,45.0,273.9,91.7,1820.0,1.94,88.2,42.2,24.6,10.9,8.0,Site Alpha - Sector 1 Quarry,Operating
+EXC037,Excavator,CAT 320 Next Gen,6.0,4618.1,89,450.0,55.2,272.8,89.5,1820.0,2.36,86.0,39.2,24.6,8.6,8.0,Site Beta - North Overpass,Operating
+WHE038,Wheel Loader,CAT 980M Quarry,6.6,6147.7,40,320.0,83.9,293.1,88.1,1820.0,2.28,84.6,42.9,24.6,21.9,8.0,Site Gamma - River Basin Basin Prep,Operating
+DOZ039,Dozer,CAT D6 XE Electric,1.5,1265.5,7,320.0,78.7,283.2,87.1,1820.0,1.9,83.6,43.3,24.6,10.5,8.0,Site Alpha - Sector 1 Quarry,Operating
+GRA040,Grader,CAT 140 Motor Grader,1.3,1415.1,41,320.0,60.3,277.0,86.7,1820.0,1.65,83.2,44.9,24.6,13.0,8.0,Site Gamma - River Basin Basin Prep,Operating
+DUM041,Dump Truck,CAT 745 Extreme Haul,3.2,2449.3,93,450.0,95.9,282.8,88.0,1820.0,1.69,84.5,42.5,24.6,11.3,8.0,Site Alpha - Sector 4 Foundation,Operating
+COM042,Compactor,CAT CB68B Asphalt,0.7,537.5,78,320.0,70.0,270.8,83.6,1820.0,1.88,80.1,44.4,24.6,11.5,8.0,Site Alpha - Sector 1 Quarry,Operating
+EXC043,Excavator,CAT 320 Next Gen,1.8,1533.1,111,450.0,84.8,279.3,87.1,1820.0,1.84,83.6,45.4,24.6,20.2,8.0,Site Beta - East Trenching Zone,Operating
+WHE044,Wheel Loader,CAT 966M,1.2,893.7,118,320.0,76.8,272.8,85.8,1820.0,1.46,82.3,44.5,24.6,14.7,8.0,Site Alpha - Sector 4 Foundation,Operating
+DOZ045,Dozer,CAT D8T Heavy,4.0,2827.8,93,320.0,63.2,256.8,87.3,1820.0,2.12,83.8,43.8,24.6,10.0,8.0,Site Gamma - River Basin Basin Prep,Operating
+GRA046,Grader,CAT 160M AWD,0.6,493.9,84,320.0,79.7,276.6,84.6,1820.0,1.58,81.1,44.2,24.6,11.3,8.0,Site Gamma - River Basin Basin Prep,Operating
+DUM047,Dump Truck,CAT 730 Articulated,10.4,8342.1,69,450.0,68.8,282.5,94.3,1820.0,2.74,90.8,39.9,24.6,17.7,8.0,Site Delta - Highway Interchange,Maintenance
+COM048,Compactor,CAT CB68B Asphalt,3.9,3066.5,84,320.0,40.8,287.5,88.2,1820.0,2.04,84.7,40.4,24.6,12.5,8.0,Site Delta - Highway Interchange,Operating
+EXC049,Excavator,CAT 320 Next Gen,6.5,7132.7,17,450.0,57.5,282.8,90.7,1820.0,2.33,87.2,41.8,24.6,17.3,8.0,Site Alpha - Sector 4 Foundation,Operating
+WHE050,Wheel Loader,CAT 966M,5.4,5426.5,109,320.0,74.1,272.8,87.2,1820.0,2.27,83.7,40.0,24.6,16.8,8.0,Site Alpha - Sector 1 Quarry,Operating
