@@ -1,4 +1,4 @@
-# CAT OperatorIQ — Complete Technical Guide
+# CAT OperatorIQ — Complete Beginner Guide
 
 Welcome to the definitive beginner-friendly technical guide for **CAT OperatorIQ**.
 
@@ -51,9 +51,18 @@ React App Mounts (Vite + React 18)
       Dashboard Renders UI (Cards, Radar Canvas, Charts, Active Alerts)
 ```
 
+### Simple Diagram Explanation:
+- **User:** The machine operator or site supervisor interacting with the screen.
+- **Frontend:** The React application rendering widgets, SVG gauges, and HTML5 canvas radar.
+- **Backend:** The FastAPI server handling business logic, calculations, and WebSocket streaming.
+- **Services:** Dedicated Python modules (`SafetyEngine`, `AnomalyService`, `PredictionService`, `AssistantService`, `SimulationService`).
+- **Database / ML:** The SQLite/PostgreSQL relational storage and Scikit-learn `.joblib` model binaries.
+- **Response:** JSON payloads containing sanitized, validated data.
+- **Frontend:** State updates trigger smooth React re-renders without full-page reloads.
+
 ---
 
-## 2. The Real-World Problem
+## 2. The Problem
 
 ### Imagine a Day on a Construction Site
 Imagine an operator named **Marcus Vance** climbing into the cab of a 36-ton **CAT 336 Heavy Duty Hydraulic Excavator** at 7:00 AM on **Site Alpha - Sector 4 Foundation**.
@@ -74,19 +83,19 @@ Imagine an operator named **Marcus Vance** climbing into the cab of a 36-ton **C
 
 During a typical shift, several critical challenges arise:
 
-1. **The Ground Worker Hazard:**
+1. **The Ground Worker Hazard (Proximity):**
    - A surveyor carrying a GPS grade rod walks behind the excavator to verify trench depth.
    - The excavator's rear counterweight creates a massive blind spot.
    - If the operator swings the bucket without knowing someone is within 3 meters, it could be fatal.
    - **How OperatorIQ helps:** The machine sensors detect ground personnel proximity (`proximity_distance_m: 2.1`) and trigger **RULE_2_PROXIMITY_CRITICAL**. The system immediately renders the worker on the cab's 2D radar, turns the dashboard banner bright red, and alerts the operator to pause movement.
 
-2. **The Mechanical Fatigue Hazard:**
+2. **The Mechanical Fatigue Hazard (Anomalies):**
    - While digging through dense rocky stratum, a hydraulic hose starts pulsing irregularly and the track tension slackens.
    - The vibration sensor spikes from normal ($1.75\text{ mm/s}$) to $4.2\text{ mm/s}$, and oil pressure drops from $43\text{ psi}$ to $28\text{ psi}$.
    - Without early detection, the hydraulic pump could seize, causing a $\$45,000$ repair and 3 days of project downtime.
    - **How OperatorIQ helps:** The **Isolation Forest Anomaly Detection Model** detects that this combination of vibration and pressure is an outlier ($p < 0.05$). An alert is flagged with explainable factors: `"Vibration is 32% above machine baseline; Oil pressure is 35% below baseline"`.
 
-3. **The Task Estimation Dilemma:**
+3. **The Task Estimation Dilemma (Duration & Delays):**
    - The project manager assigns Marcus a task: *"Excavate 400 cubic meters of earth for foundation footing"*. Standard manual charts say this takes 60 minutes.
    - But it rained heavily last night (muddy soil), Marcus is an expert operator, the machine is 2.4 years old, and the task requires 18 high-capacity truck load cycles.
    - **How OperatorIQ helps:** The **Gradient Boosting Task Duration Model** ingests these exact variables and predicts an actual completion time of **54.0 minutes** (confidence interval: 48.0 to 60.0 minutes), explaining the $+7.5\text{ min}$ weather penalty and $-6.5\text{ min}$ expert skill credit.
@@ -115,7 +124,7 @@ CAT OperatorIQ delivers nine core capabilities:
 
 ---
 
-## 4. Complete System Architecture
+## 4. Complete Architecture
 
 ```mermaid
 flowchart TD
@@ -353,7 +362,7 @@ Every technology in this project was chosen for a specific industrial software r
 
 ---
 
-## 7. How the Application Starts
+## 7. How to Run the Project
 
 ### 1. Zero-Dependency Local Setup (Default Mode)
 
@@ -530,156 +539,7 @@ If you are new to React, here is what is happening conceptually:
 
 ---
 
-## 9. Follow One User Action: Step-by-Step Traces
-
-To truly understand how data moves through this application, let's trace six distinct user actions from the moment a button is clicked to the database and back to the screen.
-
-### Action 1: User Loads the Dashboard
-
-```
-1. [User opens browser at http://localhost:5173]
-   │
-2. [DashboardPage.tsx] runs useEffect() hook on component mount
-   │
-3. [api.ts] calls api.getDashboard("OP001", "EXC001")
-   │
-4. Browser sends HTTP GET request:
-   GET http://localhost:5173/api/dashboard?operator_id=OP001&machine_id=EXC001
-   │
-5. Vite proxy forwards request to:
-   http://127.0.0.1:8000/api/dashboard?operator_id=OP001&machine_id=EXC001
-   │
-6. [backend/app/api/dashboard.py] executes get_dashboard_data()
-   │
-7. SQLAlchemy queries SQLite/Postgres:
-   - SELECT * FROM operators WHERE operator_id = 'OP001'
-   - SELECT * FROM machines WHERE machine_id = 'EXC001'
-   - SELECT * FROM tasks WHERE operator_id = 'OP001' AND status = 'In Progress'
-   - SELECT COUNT(*), AVG(actual_time_min) FROM tasks
-   │
-8. [backend/app/services/simulation_service.py] runs simulation_manager.step()
-   - Updates EXC001 telemetry jitter
-   - Evaluates 8 rules via SafetyEngine
-   │
-9. Backend constructs JSON response with KPIs, machine health, current task, and alerts
-   │
-10. [DashboardPage.tsx] receives JSON response
-   │
-11. State updates: setData(response), setLoading(false)
-   │
-12. React re-renders Dashboard with live KPI cards, task progress bar, and safety banner
-```
-
----
-
-### Action 2: User Injects a Hazard ("Worker Proximity")
-
-```
-1. [User clicks "Worker Proximity" button on SimulationControls]
-   │
-2. [SimulationControls.tsx] calls injectHazard("worker_proximity") from SimulationContext
-   │
-3. [api.ts] sends HTTP POST:
-   POST /api/simulation/inject
-   Payload: {"hazard_type": "worker_proximity", "machine_id": "EXC001", "operator_id": "OP001"}
-   │
-4. [backend/app/api/simulation.py] receives request in inject_simulation_hazard()
-   │
-5. [backend/app/services/simulation_service.py] modifies internal state:
-   - Sets self.current_state["worker_detected"] = True
-   - Sets self.current_state["proximity_distance_m"] = 2.1
-   - Moves Worker W03 to distance 2.1m and angle 120°
-   │
-6. [backend/app/api/simulation.py] automatically creates database records:
-   - INSERT INTO incidents (incident_type='Proximity Hazard', severity='Critical', ...)
-   - INSERT INTO safety_events (event_type='Proximity Hazard', severity='CRITICAL', risk_score=88.0, ...)
-   - db.commit()
-   │
-7. Next tick of WebSocket /ws/telemetry broadcasts the new state to the frontend
-   │
-8. [SimulationContext.tsx] receives WebSocket message:
-   - liveState.safety_score = 45.0
-   - liveState.risk_level = "CRITICAL"
-   - liveState.radar_objects contains Worker C at 2.1m with status "CRITICAL"
-   │
-9. [ProximityRadar.tsx] re-draws HTML5 Canvas:
-   - Worker dot turns red inside the 3-meter inner exclusion ring
-   │
-10. [SafetyAlertBanner.tsx] renders high-visibility banner:
-    "CRITICAL PROXIMITY HAZARD: Worker detected at 2.1m inside critical radius (<3.0m). Pause movement."
-```
-
----
-
-### Action 3: User Submits a Training Quiz
-
-```
-1. [User opens Training Page, clicks "Take Quiz" on TRN001]
-   │
-2. [QuizModal.tsx] renders 3 multiple-choice questions loaded from training_courses.quiz_data
-   │
-3. User selects answers: Question 1 -> Option 1; Question 2 -> Option 2; Question 3 -> Option 0
-   │
-4. User clicks "Submit Assessment"
-   │
-5. [api.ts] sends HTTP POST:
-   POST /api/training/TRN001/quiz
-   Payload: {"operator_id": "OP001", "answers": {"1": 1, "2": 2, "3": 0}}
-   │
-6. [backend/app/api/training.py] executes submit_quiz()
-   │
-7. Backend iterates over questions, compares submission against stored answer_idx:
-   - 3 out of 3 correct = 100.0% score (Passed >= 70%)
-   │
-8. SQLAlchemy updates database:
-   - UPSERT INTO training_progress (status='Completed', score=100.0, attempts=attempts+1)
-   - UPDATE operators SET training_score = LEAST(100.0, training_score + 1.5) WHERE operator_id = 'OP001'
-   - db.commit()
-   │
-9. Backend returns JSON: {"passed": true, "score_pct": 100.0, "status": "Completed"}
-   │
-10. [QuizModal.tsx] shows success screen: "Congratulations! Course marked Completed."
-   │
-11. TrainingPage updates progress bar for TRN001 to 100%
-```
-
----
-
-### Action 4: User Asks the AI Assistant
-
-```
-1. [User types: "Why is EXC001 showing a warning?" into AssistantPage chat box]
-   │
-2. [AssistantPage.tsx] adds user message to messages state and calls api.queryAssistant()
-   │
-3. [api.ts] sends HTTP POST:
-   POST /api/assistant/query
-   Payload: {"query": "Why is EXC001 showing a warning?", "operator_id": "OP001", "machine_id": "EXC001"}
-   │
-4. [backend/app/api/assistant.py] queries current operator, machine, active task, and recent incidents
-   │
-5. Calls [backend/app/services/assistant_service.py]: AssistantService.query()
-   │
-6. Assistant matches intent: Keywords "why is" and "warning" trigger Intent 2 (Safety Warning)
-   │
-7. Assistant searches knowledge base markdown files:
-   - Scans knowledge_base/safety_guides/proximity_exclusion_zones.md
-   - Extracts citations: ["Proximity Exclusion Zones"]
-   │
-8. Assistant formats response using real machine data:
-   - Answer: "EXC001 is currently flagging advisory safety alerts. Current safety status evaluates to HIGH risk."
-   - Evidence: ["Vibration reading is 2.35 mm/s", "Idle time at 41 min", "1 worker detected in proximity zone"]
-   - Next Step: "Verify worker exclusion radius around tracks and inspect undercarriage tension."
-   - Disclaimer: "AI-generated recommendations are advisory and must not replace official procedures."
-   │
-9. Backend returns JSON to frontend
-   │
-10. [AssistantPage.tsx] renders assistant response card with evidence pills, next steps, and disclaimer
-```
-
----
-
-## 10. Backend Explained
+## 9. How the Backend Works
 
 FastAPI powers the entire backend of CAT OperatorIQ. It is asynchronous, validates all data through Pydantic v2 schemas, and automatically generates interactive Swagger documentation at `http://localhost:8000/docs`.
 
@@ -739,7 +599,7 @@ app.include_router(anomalies.router)
 
 ---
 
-## 11. Database & Schema
+## 10. Database
 
 ### Database Strategy
 CAT OperatorIQ uses **SQLAlchemy 2.0** with dual compatibility:
@@ -798,7 +658,79 @@ To ensure fast queries over millions of telemetry rows, `database/schema.sql` de
 
 ---
 
-## 12. Synthetic Data Generation
+## 11. Data Flow
+
+### How Data Moves from Zero to Screen
+
+```
+   [Synthetic Generator: generate_data.py]
+                     │
+                     ▼
+          [CSV Files in ./data/*.csv]
+                     │
+                     ▼
+     [Database Seeder: seed_database.py]
+                     │
+                     ▼
+   [Relational Storage: SQLite / PostgreSQL]
+                     │
+                     ├──► [Loaded into Memory by FastAPI on Startup]
+                     │
+                     ▼
+ [Live Telemetry Stream: SimulationService] ──► [SafetyEngine (8 Rules)]
+                     │                      ──► [AnomalyService (ML)]
+                     │
+                     ▼
+             [FastAPI Backend]
+                     │
+         ┌───────────┴───────────┐
+         ▼                       ▼
+ [WebSocket Push]        [HTTP REST JSON]
+  (/ws/telemetry)          (/api/dashboard)
+         │                       │
+         └───────────┬───────────┘
+                     ▼
+         [React Client: api.ts & SimulationContext]
+                     │
+                     ▼
+  [Rendered UI: Dashboard, Proximity Radar, Alerts]
+```
+
+### Trace of 4 Real User Actions
+
+#### Action 1: Viewing a Machine Detail
+1. User clicks machine `EXC001` on `MachineHealthPage.tsx`.
+2. Component calls `api.getMachineDetail("EXC001")` and `api.getMachineTelemetryHistory("EXC001")`.
+3. FastAPI executes `get_machine_detail()` in `backend/app/api/machines.py`.
+4. Backend computes composite health percentage using 4 weighted components:
+   $$\text{Health} = 0.25 \times \text{Temp} + 0.25 \times \text{Vib} + 0.25 \times \text{Oil} + 0.25 \times \text{Maint}$$
+5. Telemetry history is fetched, reversed into chronological order, and returned as JSON.
+6. Recharts renders the time-series area charts for engine temperature and vibration.
+
+#### Action 2: Creating a New Safety Incident
+1. User clicks "+ Log Incident" on `IncidentsPage.tsx`, opening `IncidentModal.tsx`.
+2. User submits form: Machine `EXC001`, Operator `OP001`, Type `Proximity Hazard`, Severity `Critical`.
+3. Frontend sends `POST /api/incidents`.
+4. Endpoint creates a new `Incident` record with a generated UUID (`INC04A1B2`) and persists it via `db.commit()`.
+5. Frontend receives new incident and prepends it to the table list.
+
+#### Action 3: Injecting a Hazard (Worker Proximity)
+1. User clicks "Worker Proximity" on `SimulationControls.tsx`.
+2. Frontend sends `POST /api/simulation/inject` with `{"hazard_type": "worker_proximity"}`.
+3. `SimulationService` moves Worker W03 to distance $2.1\text{m}$ inside the machine's critical radius.
+4. Auto-incident and safety event records are inserted into the database.
+5. On the next 2-second WebSocket tick, `SafetyEngine` calculates score $45.0$ (`CRITICAL`).
+6. `ProximityRadar.tsx` draws the worker dot red, and `SafetyAlertBanner.tsx` turns red.
+
+#### Action 4: Submitting a Training Quiz
+1. User takes quiz for course `TRN001` in `QuizModal.tsx`.
+2. Frontend sends `POST /api/training/TRN001/quiz` with selected answers.
+3. Backend checks answers against `training_courses.quiz_data`. Score $\ge 70\%$ marks course completed.
+4. Database updates operator training competency score by $+1.5\%$.
+
+---
+
+## 12. Synthetic Data
 
 Because production Caterpillar heavy machinery telemetry is proprietary, this project features a realistic synthetic data generator in `scripts/generate_data.py`.
 
@@ -844,13 +776,29 @@ Because production Caterpillar heavy machinery telemetry is proprietary, this pr
 
 ---
 
-## 13. Machine Learning: Task Duration Prediction
+## 13. Machine Learning
+
+### What is Machine Learning?
+Machine learning is programming computers to learn patterns from historical data instead of writing manual rules for every single situation.
+- **Supervised Learning (Regression):** The model learns from past examples with known outcomes (e.g., past tasks with actual completion times) to predict future numbers.
+- **Unsupervised Learning (Anomaly Detection):** The model studies normal operating data and flags any new data point that looks geometrically unusual without needing pre-labeled tags.
+
+### ML Models Used in CAT OperatorIQ
+
+| Model | Type | Algorithm | Purpose | Location |
+| :--- | :--- | :--- | :--- | :--- |
+| **Task Time Predictor** | Supervised Regression | `GradientBoostingRegressor` | Predicts task completion duration with 90% confidence intervals and factor explanations. | `ml/task_time_model.py` |
+| **Telemetry Anomaly Detector** | Unsupervised Outlier | `IsolationForest` | Identifies unusual multi-sensor combinations and generates diagnostic explanations. | `ml/anomaly_detection.py` |
+
+---
+
+## 14. Task Prediction
 
 ### The Problem
-Dispatchers need accurate task completion forecasts. Standard estimates use static formulas (e.g., "excavating always takes 60 minutes"). But on a real construction site, rain, operator inexperience, machine wear, and material cycle counts significantly change the time required.
+Standard project schedules rely on static manual estimates (e.g., "excavating always takes 60 minutes"). But on a real construction site, rain, operator inexperience, machine wear, and material cycle counts significantly change the time required.
 
 ### The ML Solution: Gradient Boosting Regression
-The model is implemented in `ml/task_time_model.py` and trained in `ml/train_models.py`.
+Implemented in `ml/task_time_model.py` and trained in `ml/train_models.py`.
 
 ```
 Task Features (Task Type, Weather, Skill, Machine Age, Cycles, Distance)
@@ -867,14 +815,6 @@ Predicted Duration (minutes) ± 90% Confidence Interval (± 1.645 * residual_std
        ▼
 Factor Attribution Engine (Weather Δ, Skill Δ, Machine Age Δ, Cycle Count Δ)
 ```
-
-### Preprocessing Pipeline (`ml/data_preprocessing.py`)
-1. **Categorical Features:** One-hot encoded using predefined domain categories:
-   - `task_type`: 7 categories (`Earth Excavation`, `Trenching`, `Material Loading`, `Grading`, `Demolition`, `Compaction`, `Hauling`)
-   - `weather`: 5 categories (`Sunny`, `Cloudy`, `Windy`, `Rainy`, `Storm`)
-   - `operator_skill`: 3 categories (`Beginner`, `Intermediate`, `Expert`)
-2. **Continuous Features:** Standardized to zero mean and unit variance using `StandardScaler`:
-   - `machine_age`, `load_cycles`, `distance`, `historical_operator_avg_time`, `machine_utilization`.
 
 ### Verified Model Performance Metrics (`models/metrics.json`)
 
@@ -910,7 +850,7 @@ If a task is predicted to take **54 minutes**, the operator sees:
 
 ---
 
-## 14. Machine Learning: Anomaly Detection
+## 15. Anomaly Detection
 
 ### What is an Anomaly?
 In heavy machinery telemetry, an anomaly is not just a single sensor exceeding a limit. An anomaly is an **unusual combination of readings** that diverges from nominal machine baselines.
@@ -953,7 +893,7 @@ $$\text{Severity} = \text{clip}\left(\frac{0.15 - \text{RawScore}}{0.35} \times 
 
 ---
 
-## 15. The Safety Engine
+## 16. Safety Engine
 
 ### Why Rule-Based Instead of Pure AI?
 In construction life safety, **nondeterministic black-box models are unacceptable**. An operator or safety inspector must know with 100% mathematical certainty why a hazard was triggered.
@@ -1000,7 +940,7 @@ Every safety response in the system includes Caterpillar's standard industrial a
 
 ---
 
-## 16. The AI Assistant
+## 17. AI Assistant
 
 ### How It Works
 The assistant is implemented in `backend/app/services/assistant_service.py` and exposed via `POST /api/assistant/query`.
@@ -1042,7 +982,7 @@ In an open-pit mine or remote quarry, cellular and satellite connectivity can dr
 
 ---
 
-## 17. Real-Time Telemetry & Simulation System
+## 18. Real-Time System
 
 ### WebSockets for Beginners
 A standard HTTP request is a single question-and-answer exchange (the client asks, the server responds, the connection closes).
@@ -1070,7 +1010,7 @@ Because we are not connected to a physical Caterpillar machine CAN bus in this s
 
 ---
 
-## 18. Incident Management
+## 19. Incident Management
 
 ### Incident Lifecycle
 ```mermaid
@@ -1096,7 +1036,7 @@ stateDiagram-v2
 
 ---
 
-## 19. Training System
+## 20. Training System
 
 The Training Hub ensures operator competency directly addresses real safety infractions.
 
@@ -1128,7 +1068,7 @@ The Training Hub ensures operator competency directly addresses real safety infr
 
 ---
 
-## 20. Frontend ↔ Backend Communication
+## 21. Frontend ↔ Backend
 
 All communication uses standard web protocols:
 
@@ -1165,7 +1105,7 @@ When the frontend asks for live safety state (`GET /api/safety/live`), the backe
 
 ---
 
-## 21. Request Lifecycle: Complete Code Walkthrough
+## 22. Complete Request Lifecycle
 
 Let's follow one request line-by-line across every file: **`GET /api/dashboard`**.
 
@@ -1227,7 +1167,7 @@ The backend returns a `DashboardResponse` dictionary. The browser receives the J
 
 ---
 
-## 22. Error Handling & Resilience
+## 23. Error Handling
 
 CAT OperatorIQ is engineered to fail gracefully:
 
@@ -1249,7 +1189,7 @@ CAT OperatorIQ is engineered to fail gracefully:
 
 ---
 
-## 23. Environment Variables
+## 24. Environment Variables
 
 All settings are managed in `backend/app/config.py` with defaults provided in `.env.example`:
 
@@ -1265,7 +1205,7 @@ All settings are managed in `backend/app/config.py` with defaults provided in `.
 
 ---
 
-## 24. Docker Deployment
+## 25. Docker
 
 ### Architecture
 `docker-compose.yml` configures three isolated container services connected by a private bridge network:
@@ -1294,7 +1234,7 @@ All settings are managed in `backend/app/config.py` with defaults provided in `.
 
 ---
 
-## 25. Testing
+## 26. Testing
 
 The repository contains 15 automated unit and integration tests under `backend/tests/`:
 
@@ -1321,7 +1261,7 @@ backend/tests/test_task_prediction.py .                                  [100%]
 
 ---
 
-## 26. Beginner Debugging Guide
+## 27. Debugging
 
 | Symptom | Probable Cause | Where to Look | How to Fix |
 | :--- | :--- | :--- | :--- |
@@ -1334,7 +1274,7 @@ backend/tests/test_task_prediction.py .                                  [100%]
 
 ---
 
-## 27. How to Modify the Project
+## 28. How to Modify the Project
 
 ### How to Add a New Safety Rule
 1. Open `backend/app/services/safety_engine.py`.
@@ -1381,7 +1321,7 @@ backend/tests/test_task_prediction.py .                                  [100%]
 
 ---
 
-## 28. File-by-File Reference Map
+## 29. File-by-File Map
 
 | File Path | Primary Responsibility | Key Classes / Functions | Safe to Modify? |
 | :--- | :--- | :--- | :--- |
@@ -1406,7 +1346,7 @@ backend/tests/test_task_prediction.py .                                  [100%]
 
 ---
 
-## 29. If You Only Remember 20 Things
+## 30. If You Only Remember 20 Things
 
 1. **CAT OperatorIQ** is an operator assistance and fleet monitoring platform for heavy Caterpillar machinery.
 2. It serves two personas: **In-Cab Operators** (real-time assistance) and **Fleet Supervisors** (oversight and audits).
@@ -1431,7 +1371,7 @@ backend/tests/test_task_prediction.py .                                  [100%]
 
 ---
 
-## 30. Beginner Glossary
+## 31. Beginner Glossary
 
 - **API (Application Programming Interface):** A defined set of HTTP URLs through which the frontend and backend talk.
 - **REST (Representational State Transfer):** An architectural style using standard HTTP verbs (`GET`, `POST`, `PUT`, `DELETE`).
@@ -1463,7 +1403,7 @@ backend/tests/test_task_prediction.py .                                  [100%]
 
 ---
 
-## 31. Interview Preparation: Questions & Answers
+## 32. Interview Questions
 
 ### Architecture & System Design
 **Q: Why did you choose WebSockets for telemetry instead of HTTP polling?**
@@ -1492,7 +1432,7 @@ backend/tests/test_task_prediction.py .                                  [100%]
 
 ---
 
-## 32. Five-Minute Project Explanation
+## 33. Five-Minute Explanation
 
 > *"CAT OperatorIQ is an intelligent in-cab assistance and fleet monitoring platform built for Caterpillar heavy machinery like excavators, loaders, and dozers.*
 >
@@ -1510,13 +1450,13 @@ backend/tests/test_task_prediction.py .                                  [100%]
 
 ---
 
-## 33. Thirty-Second Elevator Pitch
+## 34. Thirty-Second Explanation
 
 > *"CAT OperatorIQ is an intelligent digital co-pilot for Caterpillar heavy machinery. It combines real-time IoT telemetry streaming over WebSockets, a live 2D worker proximity radar, an auditable 8-rule safety scoring engine, and Scikit-Learn ML models that predict task completion times within 4 minutes. With an offline-capable AI assistant and interactive training quizzes, OperatorIQ keeps machine operators safer, reduces unscheduled machine downtime, and keeps site projects on schedule."*
 
 ---
 
-## 34. Final Complete Architecture
+## 35. Final Architecture
 
 ```mermaid
 graph TB
