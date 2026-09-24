@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_serializer
 from typing import Any
 
 # Telemetry Schemas
@@ -158,6 +158,14 @@ class IncidentResponse(BaseModel):
     created_at: datetime | str
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer("timestamp", "created_at")
+    def serialize_datetime(self, dt: datetime | str | None, _info):
+        if isinstance(dt, datetime):
+            if dt.tzinfo is None:
+                return dt.isoformat() + "Z"
+            return dt.isoformat()
+        return dt
 
 # Anomaly Schemas
 class AnomalyResponse(BaseModel):

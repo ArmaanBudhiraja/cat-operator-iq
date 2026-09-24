@@ -8,6 +8,7 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Drawer } from '../components/ui/Drawer';
 import { Plus, Check } from 'lucide-react';
+import { formatIncidentTableTime, formatIncidentDetailTime } from '../utils/dateFormat';
 
 export const IncidentsPage: React.FC = () => {
   const { activeMachineId, activeOperatorId } = useRole();
@@ -156,7 +157,7 @@ export const IncidentsPage: React.FC = () => {
                     </td>
 
                     <td className="py-3 px-4 text-right text-[#737373] tabular-nums font-mono text-xs">
-                      {inc.timestamp?.replace('T', ' ').slice(5, 16)}
+                      {formatIncidentTableTime(inc.timestamp)}
                     </td>
 
                     <td className="py-3 px-4 text-right">
@@ -238,7 +239,7 @@ export const IncidentsPage: React.FC = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-[#737373]">Timestamp</span>
-                <span className="text-[#737373] tabular-nums font-mono">{selectedIncident.timestamp?.replace('T', ' ').slice(0, 19)}</span>
+                <span className="text-[#737373] tabular-nums font-mono">{formatIncidentDetailTime(selectedIncident.timestamp)}</span>
               </div>
             </div>
 

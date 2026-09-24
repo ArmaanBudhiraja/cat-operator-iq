@@ -19,9 +19,9 @@ export const TrainingPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadTraining = async () => {
+  const loadTraining = async (showSkeleton = true) => {
     try {
-      setLoading(true);
+      if (showSkeleton) setLoading(true);
       setError(null);
       const res = await api.getTraining(activeOperatorId);
       setCourses(res.courses);
@@ -29,7 +29,7 @@ export const TrainingPage: React.FC = () => {
     } catch (err: any) {
       setError(err.message || 'Failed to load training courses');
     } finally {
-      setLoading(false);
+      if (showSkeleton) setLoading(false);
     }
   };
 
@@ -51,7 +51,7 @@ export const TrainingPage: React.FC = () => {
     : courses;
 
   const completedCourses = courses.filter((c) => c.completion_status === 'Completed').length;
-  const overallProgress = courses.length > 0 ? Math.round((completedCourses / courses.length) * 100) : 72;
+  const overallProgress = courses.length > 0 ? Math.round((completedCourses / courses.length) * 100) : 0;
 
   const primaryRec = recommendations[0] || {
     title: 'Proximity safety',
@@ -217,7 +217,7 @@ export const TrainingPage: React.FC = () => {
           course={selectedCourseForQuiz}
           operatorId={activeOperatorId}
           onClose={() => setSelectedCourseForQuiz(null)}
-          onQuizCompleted={loadTraining}
+          onQuizCompleted={() => loadTraining(false)}
         />
       )}
     </div>

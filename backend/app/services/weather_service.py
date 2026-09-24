@@ -29,7 +29,7 @@ class WeatherService:
     }
 
     @classmethod
-    def get_weather(cls, location: str = "Peoria,US") -> dict[str, Any]:
+    def get_weather(cls, location: str = "Delhi,IN") -> dict[str, Any]:
         """
         Retrieves current weather data.
         Returns cached data if within TTL, otherwise attempts live fetch with fallback.

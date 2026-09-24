@@ -12,10 +12,25 @@ router = APIRouter(prefix="/api/training", tags=["Training Hub"])
 @router.get("")
 def get_courses(operator_id: str = "OP001", db: Session = Depends(get_db)):
     courses = db.query(TrainingCourse).all()
-    progress_records = {
-        p.course_id: p
-        for p in db.query(TrainingProgress).filter(TrainingProgress.operator_id == operator_id).all()
-    }
+    all_progress = (
+        db.query(TrainingProgress)
+        .filter(TrainingProgress.operator_id == operator_id)
+        .all()
+    )
+
+    progress_records = {}
+    for p in all_progress:
+        if p.course_id not in progress_records:
+            progress_records[p.course_id] = p
+        else:
+            existing = progress_records[p.course_id]
+            # Prioritize Completed status and higher scores
+            if p.completion_status == "Completed" and existing.completion_status != "Completed":
+                progress_records[p.course_id] = p
+            elif existing.completion_status != "Completed" and (p.score or 0.0) > (existing.score or 0.0):
+                progress_records[p.course_id] = p
+            elif p.completion_status == "Completed" and existing.completion_status == "Completed" and (p.score or 0.0) > (existing.score or 0.0):
+                progress_records[p.course_id] = p
 
     results = []
     for c in courses:
@@ -65,30 +80,32 @@ def submit_quiz(course_id: str, submission: QuizSubmission, db: Session = Depend
     if not quiz_questions:
         raise HTTPException(status_code=400, detail="No quiz defined for this course")
 
-    # Evaluate answers
+    # Evaluate answers (support both int and str keys in submission.answers)
     correct_count = 0
     total = len(quiz_questions)
     for q in quiz_questions:
         q_id = q["id"]
         correct_idx = q["answer_idx"]
         user_choice = submission.answers.get(q_id)
+        if user_choice is None:
+            user_choice = submission.answers.get(str(q_id))
         if user_choice == correct_idx:
             correct_count += 1
 
     score_pct = round((correct_count / total) * 100.0, 1)
     passed = score_pct >= 70.0
 
-    # Upsert TrainingProgress
-    prog = (
+    # Upsert and consolidate TrainingProgress
+    progs = (
         db.query(TrainingProgress)
         .filter(
             TrainingProgress.operator_id == submission.operator_id,
             TrainingProgress.course_id == course_id
         )
-        .first()
+        .all()
     )
 
-    if not prog:
+    if not progs:
         prog = TrainingProgress(
             progress_id=f"PRG{uuid.uuid4().hex[:6].upper()}",
             operator_id=submission.operator_id,
@@ -100,11 +117,16 @@ def submit_quiz(course_id: str, submission: QuizSubmission, db: Session = Depend
         )
         db.add(prog)
     else:
-        prog.attempts += 1
-        prog.score = max(prog.score, score_pct)
-        if passed:
+        prog = progs[0]
+        prog.attempts = max(p.attempts for p in progs) + 1
+        prog.score = max(max(p.score for p in progs), score_pct)
+        if passed or any(p.completion_status == "Completed" for p in progs):
             prog.completion_status = "Completed"
-            prog.completed_at = datetime.utcnow()
+            if not prog.completed_at:
+                prog.completed_at = datetime.utcnow()
+        # Clean up any extraneous duplicate rows
+        for extra in progs[1:]:
+            db.delete(extra)
 
     # Update operator overall training score
     operator = db.query(Operator).filter(Operator.operator_id == submission.operator_id).first()

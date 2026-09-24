@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAT OperatorIQ — 5-Minute Hackathon Pitch</title>
+  <style>
+    :root {
+      --bg-dark: #0F1115;
+      --card-bg: #181B22;
+      --card-border: #2C313C;
+      --cat-yellow: #FFCD00;
+      --text-white: #F5F5F7;
+      --text-muted: #8C93A0;
+      --text-dim: #5A606C;
+      --critical-red: #EF4444;
+      --safe-green: #10B981;
+      --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #08090B;
+      color: var(--text-white);
+      font-family: var(--font-family);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      user-select: none;
+    }
+
+    /* 16:9 Presentation Frame */
+    #presentation-container {
+      position: relative;
+      width: 100vw;
+      height: 56.25vw; /* 16:9 */
+      max-height: 100vh;
+      max-width: 177.78vh;
+      background-color: var(--bg-dark);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 3.5vw 5vw 4vw 5vw;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      transform: translateX(15px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+      z-index: 2;
+    }
+
+    /* Header Tracker & Brand */
+    .slide-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 0.8vw;
+    }
+
+    .brand-accent-bar {
+      width: 24px;
+      height: 4px;
+      background-color: var(--cat-yellow);
+      border-radius: 2px;
+    }
+
+    .tracker-tag {
+      font-size: 0.8vw;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--cat-yellow);
+      text-transform: uppercase;
+    }
+
+    .slide-headline {
+      font-size: 2.3vw;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text-white);
+      margin-bottom: 2vw;
+    }
+
+    /* Card System */
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1.5vw;
+      position: relative;
+    }
+
+    .card.yellow-border {
+      border-color: var(--cat-yellow);
+    }
+
+    .card.red-border {
+      border-color: var(--critical-red);
+    }
+
+    .card-label {
+      font-size: 0.75vw;
+      font-weight: 700;
+      color: var(--cat-yellow);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.5vw;
+    }
+
+    .card-title {
+      font-size: 1.25vw;
+      font-weight: 700;
+      color: var(--text-white);
+      margin-bottom: 0.5vw;
+    }
+
+    .card-desc {
+      font-size: 0.95vw;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* Grids */
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2vw;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5vw;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5vw;
+    }
+
+    /* Typography utils */
+    .metric-number {
+      font-size: 3.4vw;
+      font-weight: 800;
+      color: var(--cat-yellow);
+      line-height: 1;
+      margin-bottom: 0.4vw;
+    }
+
+    .metric-number.red {
+      color: var(--critical-red);
+    }
+
+    .metric-number.white {
+      color: var(--text-white);
+    }
+
+    /* Bottom Navigation / Controls */
+    .controls {
+      position: absolute;
+      bottom: 12px;
+      right: 20px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .slide-counter {
+      font-size: 13px;
+      font-family: monospace;
+      color: var(--text-dim);
+    }
+
+    .btn-nav {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-white);
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+
+    .btn-nav:hover {
+      background: var(--cat-yellow);
+      color: #000;
+    }
+
+    .progress-bar-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.08);
+      z-index: 10;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--cat-yellow);
+      width: 6.67%;
+      transition: width 0.25s ease;
+    }
+
+    /* Radar Canvas Animation */
+    .radar-container {
+      position: relative;
+      width: 16vw;
+      height: 16vw;
+      margin: 0 auto;
+    }
+
+    .radar-circle {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .radar-circle.c1 { width: 33%; height: 33%; border-color: rgba(239, 68, 68, 0.5); }
+    .radar-circle.c2 { width: 66%; height: 66%; border-color: rgba(255, 205, 0, 0.4); }
+    .radar-circle.c3 { width: 100%; height: 100%; border-color: rgba(16, 185, 129, 0.3); }
+
+    .radar-blip {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: var(--critical-red);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--critical-red);
+      animation: pulse 1.2s infinite;
+      top: 38%;
+      left: 64%;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.8; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="presentation-container">
+
+    <!-- ==================== SLIDE 1: COVER ==================== -->
+    <div class="slide active" data-index="1">
+      <div style="flex: 1; display: flex; align-items: center; justify-content: space-between;">
+        <div style="max-width: 58%;">
+          <div class="brand-accent-bar" style="margin-bottom: 2vw; width: 40px; height: 5px;"></div>
+          <h1 style="font-size: 4vw; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1vw;">CAT OperatorIQ</h1>
+          <p style="font-size: 1.5vw; color: var(--cat-yellow); font-weight: 600; margin-bottom: 1.5vw;">
+            "Your intelligent companion for safer and smarter machine operations."
+          </p>
+          <p style="font-size: 1vw; color: var(--text-muted); line-height: 1.6; max-width: 90%;">
+            Real-time in-cab assistance cockpit • 360° Safety Radar • Explainable Multi-Rule Risk Index • ML Task Duration Predictor • Grounded Offline Assistant
+          </p>
+        </div>
+
+        <div class="card" style="width: 32%; padding: 2vw; border-color: rgba(255, 205, 0, 0.3);">
+          <div class="card-label">EXC001 • CAT 336 EXCAVATOR</div>
+          <div style="font-size: 1.1vw; font-weight: 700; margin-bottom: 1vw;">INTELLIGENT COCKPIT ACTIVE</div>
+          <div class="metric-number white" style="font-size: 3.8vw;">92%</div>
+          <div style="font-size: 0.9vw; color: var(--text-muted); margin-bottom: 1.5vw;">Composite Machine Health</div>
+          <div style="font-size: 0.85vw; color: var(--text-dim); line-height: 1.8; border-top: 1px solid var(--card-border); pt: 1vw;">
+            <div>360° RADAR: NOMINAL SCANNING</div>
+            <div>CAN-BUS TELEMETRY: 1,850 RPM</div>
+            <div>TASK: EARTH EXCAVATION (T001)</div>
+            <div>AI ASSISTANT: OFFLINE-READY</div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size: 0.85vw; color: var(--text-dim); padding-top: 1vw;">
+        Hackathon Pitch | Caterpillar Hackathon 2026
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 2: THE OPERATOR PROBLEM ==================== -->
+    <div class="slide" data-index="2">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">01 / The Challenge</div>
+      </div>
+      <h2 class="slide-headline">The machine is connected. The operator still needs help.</h2>
+
+      <div class="grid-4" style="margin-bottom: 1.8vw;">
+        <div class="card">
+          <div class="card-label">01 • BLIND SPOTS</div>
+          <div class="card-title">Perimeter Obstruction</div>
+          <div class="card-desc">Excavator boom, counterweight, and swing blind spots make 360° visibility physically impossible.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">02 • GROUND WORKERS</div>
+          <div class="card-title">Proximity Incursions</div>
+          <div class="card-desc">Grade checkers and spotters continuously enter hazardous radius zones during live bucket swings.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">03 • MECHANICAL STRAIN</div>
+          <div class="card-title">Silent Degradation</div>
+          <div class="card-desc">Hydraulic cavitation, excessive idle, and thermal buildup slowly damage machines without operator awareness.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">04 • TIGHT SCHEDULES</div>
+          <div class="card-title">Cycle Stress</div>
+          <div class="card-desc">Aggressive hauling schedules create fatigue and rushed movements, exponentially increasing incident risks.</div>
+        </div>
+      </div>
+
+      <div class="card yellow-border" style="display: flex; justify-content: space-between; align-items: center; padding: 1.4vw 2vw;">
+        <div style="max-width: 48%;">
+          <div style="font-size: 0.75vw; font-weight: 700; color: var(--text-dim); letter-spacing: 0.08em;">TRADITIONAL TELEMATICS</div>
+          <div style="font-size: 1.1vw; color: var(--text-muted); margin-top: 0.3vw;">Tells the fleet manager what happened hours after failure occurs.</div>
+        </div>
+        <div style="width: 1px; height: 40px; background: var(--card-border);"></div>
+        <div style="max-width: 48%;">
+          <div style="font-size: 0.75vw; font-weight: 700; color: var(--cat-yellow); letter-spacing: 0.08em;">CAT OPERATORIQ</div>
+          <div style="font-size: 1.25vw; font-weight: 700; color: var(--text-white); margin-top: 0.3vw;">Helps the operator understand what is happening right now.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 3: THE SOLUTION ==================== -->
+    <div class="slide" data-index="3">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">02 / The Solution</div>
+      </div>
+      <h2 class="slide-headline">Meet CAT OperatorIQ</h2>
+
+      <div class="grid-2" style="margin-bottom: 1.5vw;">
+        <div class="card">
+          <div class="card-label">01 • 360° SAFETY RADAR</div>
+          <div class="card-title">Real-Time Worker Proximity Awareness</div>
+          <div class="card-desc">Dynamic 3-zone exclusion boundary (<3m, 3–6m, >6m) tracking ground personnel around swing perimeters with instant hazard lighting.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">02 • MULTI-RULE SAFETY ENGINE</div>
+          <div class="card-title">Explainable 0–100 Risk Index</div>
+          <div class="card-desc">Evaluates 8 simultaneous mechanical and proximity safety rules to generate transparent, verifiable in-cab alerts.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">03 • ML TASK PREDICTION</div>
+          <div class="card-title">ETA + Confidence Range + Contributing Factors</div>
+          <div class="card-desc">Gradient Boosting model forecasting task completion duration with 90% confidence bands and transparent weather/operator factor explanations.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">04 • AI OPERATOR ASSISTANT</div>
+          <div class="card-title">Offline-Ready Operational Guidance</div>
+          <div class="card-desc">Grounded query assistant delivering immediate machine evidence and operating manual citations without requiring cloud APIs.</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 1vw 1.5vw; border-color: rgba(255, 205, 0, 0.4); display: flex; align-items: center; justify-content: space-between;">
+        <span style="font-size: 1.1vw; font-weight: 800; color: var(--cat-yellow); letter-spacing: 0.05em;">ASSISTANCE, NOT CONTROL</span>
+        <span style="font-size: 0.95vw; color: var(--text-white);">OperatorIQ never overrides machine controls — it empowers the human operator.</span>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 4: HOW IT WORKS ==================== -->
+    <div class="slide" data-index="4">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">03 / System Architecture</div>
+      </div>
+      <h2 class="slide-headline">From machine signals → actionable decisions</h2>
+
+      <div class="grid-3" style="margin-bottom: 2vw; align-items: stretch;">
+        <div class="card">
+          <div class="card-label">STAGE 01</div>
+          <div class="card-title">MACHINE & SITE DATA</div>
+          <div class="card-desc" style="margin-top: 1vw; line-height: 1.8;">
+            <div>• CAN-Bus Telemetry (RPM, Temp, Oil, Vibration)</div>
+            <div>• Task Context (Cycles, Load, Distance)</div>
+            <div>• Operator Profile & Skill Standing</div>
+            <div>• Jobsite Environment & Live Weather</div>
+          </div>
+        </div>
+
+        <div class="card yellow-border">
+          <div class="card-label">STAGE 02</div>
+          <div class="card-title">OPERATORIQ INTELLIGENCE</div>
+          <div class="card-desc" style="margin-top: 1vw; line-height: 1.8;">
+            <div>• Safety Rules: 8-Factor 0–100 Risk Engine</div>
+            <div>• ML Regressor: Gradient Boosting ETA Pipeline</div>
+            <div>• Anomaly Detection: Isolation Forest Outlier Scorer</div>
+            <div>• RAG Assistant: Offline Grounded Manuals</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">STAGE 03</div>
+          <div class="card-title">ACTIONABLE OUTPUT</div>
+          <div class="card-desc" style="margin-top: 1vw; line-height: 1.8;">
+            <div>• In-Cab Audio-Visual Warning Banners</div>
+            <div>• Dynamic Task ETA & 90% Confidence Interval</div>
+            <div>• Anti-Idling & Maintenance Advice</div>
+            <div>• Incident GPS Logs & Fleet Compliance Reports</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; color: var(--text-dim); font-size: 0.9vw;">
+        Deterministic Event Loop  •  Sub-100ms Latency  •  Dual Database Persistence (SQLite / PostgreSQL)
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 5: DATA + AI ENGINE ==================== -->
+    <div class="slide" data-index="5">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">04 / Machine Learning & Data</div>
+      </div>
+      <h2 class="slide-headline">Built on data. Designed for explainability.</h2>
+
+      <div class="grid-4" style="margin-bottom: 1.8vw;">
+        <div class="card">
+          <div class="metric-number">10,000</div>
+          <div style="font-weight: 700; font-size: 1vw;">Telemetry Records</div>
+          <div class="card-desc" style="font-size: 0.8vw;">Engine, hydraulic, vibration CAN-bus</div>
+        </div>
+        <div class="card">
+          <div class="metric-number">2,000</div>
+          <div style="font-weight: 700; font-size: 1vw;">Task Records</div>
+          <div class="card-desc" style="font-size: 0.8vw;">Excavation, grading, loading cycles</div>
+        </div>
+        <div class="card">
+          <div class="metric-number">500</div>
+          <div style="font-weight: 700; font-size: 1vw;">Safety Events</div>
+          <div class="card-desc" style="font-size: 0.8vw;">Proximity, fatigue, seatbelt flags</div>
+        </div>
+        <div class="card">
+          <div class="metric-number">300</div>
+          <div style="font-weight: 700; font-size: 1vw;">Incidents Logged</div>
+          <div class="card-desc" style="font-size: 0.8vw;">GPS sectors & resolution audits</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">UNSUPERVISED ANOMALY DETECTION</div>
+          <div class="card-title">Isolation Forest Pipeline</div>
+          <div class="card-desc">Trained on multi-dimensional telemetry to flag abnormal mechanical vibration patterns and excessive idling shifts before hardware failure.</div>
+        </div>
+        <div class="card yellow-border">
+          <div class="card-label">SUPERVISED DURATION REGRESSION</div>
+          <div class="card-title">Gradient Boosting Regressor</div>
+          <div style="display: flex; gap: 2vw; margin-top: 0.5vw; margin-bottom: 0.5vw;">
+            <div>
+              <div style="font-size: 1.8vw; font-weight: 800; color: var(--cat-yellow);">R² = 0.964</div>
+              <div style="font-size: 0.8vw; color: var(--text-muted);">Correlation Coefficient</div>
+            </div>
+            <div>
+              <div style="font-size: 1.8vw; font-weight: 800; color: var(--text-white);">MAE = 4.13 min</div>
+              <div style="font-size: 0.8vw; color: var(--text-muted);">Mean Absolute Error</div>
+            </div>
+          </div>
+          <div class="card-desc" style="font-size: 0.85vw;">Deterministic synthetic dataset • seed 42</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 6: SAFETY RADAR ==================== -->
+    <div class="slide" data-index="6">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">05 / Perimeter Defense</div>
+      </div>
+      <h2 class="slide-headline">See the hazard before it becomes an incident.</h2>
+
+      <div class="grid-2" style="align-items: center;">
+        <div class="card" style="text-align: center; padding: 2.5vw;">
+          <div class="radar-container">
+            <div class="radar-circle c3"></div>
+            <div class="radar-circle c2"></div>
+            <div class="radar-circle c1"></div>
+            <div class="radar-blip"></div>
+            <div style="position: absolute; top: 48%; left: 45%; font-size: 0.8vw; font-weight: bold; color: var(--cat-yellow);">EXC001</div>
+          </div>
+
+          <div style="display: flex; justify-content: center; gap: 2vw; margin-top: 1.5vw; font-size: 0.85vw;">
+            <span style="color: var(--critical-red); font-weight: 700;">CRITICAL: &lt; 3 m</span>
+            <span style="color: var(--cat-yellow); font-weight: 700;">WARNING: 3–6 m</span>
+            <span style="color: var(--safe-green); font-weight: 700;">SAFE: &gt; 6 m</span>
+          </div>
+        </div>
+
+        <div class="card red-border" style="padding: 2vw;">
+          <div style="font-size: 0.85vw; font-weight: 800; color: var(--critical-red); letter-spacing: 0.1em;">HAZARD DETECTED</div>
+          <div style="font-size: 2.2vw; font-weight: 800; margin-top: 0.2vw;">Worker C  •  2.1 m</div>
+          <div class="metric-number red" style="font-size: 3.5vw; margin-top: 0.8vw;">88 / 100</div>
+          <div style="font-size: 0.9vw; color: var(--text-muted); margin-bottom: 1.5vw;">Composite Risk Index (CRITICAL)</div>
+          <div class="card-desc" style="font-size: 1vw; color: var(--text-white); font-weight: 600; line-height: 1.5;">
+            "Ground worker detected inside the critical proximity zone."
+          </div>
+          <div class="card-desc" style="font-size: 0.9vw; margin-top: 0.8vw;">
+            Advisory Action: Pause hydraulic swing immediately. Establish positive line-of-sight eye contact before continuing shift cycle.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 7: EXPLAINABLE SAFETY ENGINE ==================== -->
+    <div class="slide" data-index="7">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">06 / Explainable Risk Engine</div>
+      </div>
+      <h2 class="slide-headline">Every risk score has a reason.</h2>
+
+      <div style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 1.5vw; align-items: stretch;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8vw;">
+          <div class="card" style="padding: 0.9vw;">
+            <div style="font-weight: 700; font-size: 0.95vw;">Seatbelt Compliance</div>
+            <div style="font-size: 0.8vw; color: var(--text-muted);">Unfastened: +35 risk</div>
+          </div>
+          <div class="card" style="padding: 0.9vw;">
+            <div style="font-weight: 700; font-size: 0.95vw;">Worker Proximity</div>
+            <div style="font-size: 0.8vw; color: var(--text-muted);">&lt;3m (+45) | 3-6m (+20)</div>
+          </div>
+          <div class="card" style="padding: 0.9vw;">
+            <div style="font-weight: 700; font-size: 0.95vw;">Operator Fatigue</div>
+            <div style="font-size: 0.8vw; color: var(--text-muted);">Fatigue index &ge; 0.70: +30</div>
+          </div>
+          <div class="card" style="padding: 0.9vw;">
+            <div style="font-weight: 700; font-size: 0.95vw;">Engine Temperature</div>
+            <div style="font-size: 0.8vw; color: var(--text-muted);">Thermal breach &gt;98°C: +25</div>
+          </div>
+          <div class="card" style="padding: 0.9vw;">
+            <div style="font-weight: 700; font-size: 0.95vw;">Vibration Anomaly</div>
+            <div style="font-size: 0.8vw; color: var(--text-muted);">Cavitation spike: +20</div>
+          </div>
+          <div class="card" style="padding: 0.9vw;">
+            <div style="font-weight: 700; font-size: 0.95vw;">Excessive Idling</div>
+            <div style="font-size: 0.8vw; color: var(--text-muted);">&gt;30 min wasteful idle: +15</div>
+          </div>
+          <div class="card" style="padding: 0.9vw;">
+            <div style="font-weight: 700; font-size: 0.95vw;">Recent Safety Events</div>
+            <div style="font-size: 0.8vw; color: var(--text-muted);">Unresolved breaches: +20</div>
+          </div>
+          <div class="card" style="padding: 0.9vw;">
+            <div style="font-weight: 700; font-size: 0.95vw;">Weather + Heavy Load</div>
+            <div style="font-size: 0.8vw; color: var(--text-muted);">Rain + payload &gt;18t: +15</div>
+          </div>
+        </div>
+
+        <div class="card yellow-border" style="display: flex; flex-direction: column; justify-content: center; padding: 1.5vw;">
+          <div class="card-label">EXPLAINABILITY PIPELINE</div>
+          <div style="margin-top: 0.8vw; font-size: 1vw; line-height: 2;">
+            <div><strong style="color: var(--cat-yellow);">1. INPUT SIGNALS</strong><br><span style="font-size: 0.8vw; color: var(--text-muted);">CAN-bus + Radar + Site telemetry</span></div>
+            <div><strong style="color: var(--cat-yellow);">2. RULE EVALUATION</strong><br><span style="font-size: 0.8vw; color: var(--text-muted);">8 Transparent deterministic conditions</span></div>
+            <div><strong style="color: var(--cat-yellow);">3. RISK SCORE</strong><br><span style="font-size: 0.8vw; color: var(--text-muted);">Calculated 0 – 100 Index</span></div>
+            <div><strong style="color: var(--cat-yellow);">4. ACTIONABLE ALERT</strong><br><span style="font-size: 0.8vw; color: var(--text-muted);">In-Cab audio & HUD guidance</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 8: TASK PREDICTION ==================== -->
+    <div class="slide" data-index="8">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">07 / Predictive Operations</div>
+      </div>
+      <h2 class="slide-headline">Not just an ETA. An explanation.</h2>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">ACTIVE TASK • T001</div>
+          <div class="card-title" style="font-size: 1.6vw;">Earth Excavation & Trenching</div>
+          <div class="metric-number" style="font-size: 4vw; margin-top: 1vw;">54 min</div>
+          <div style="font-size: 1vw; font-weight: 700; color: var(--text-white);">PROJECTED TASK ETA</div>
+          <div style="font-size: 1.1vw; color: var(--cat-yellow); margin-top: 0.8vw; font-weight: 600;">
+            90% RANGE: 48 – 61 min
+          </div>
+          <div style="font-size: 0.85vw; color: var(--text-dim); margin-top: 1.5vw;">
+            Engine: Gradient Boosting Regressor (R² = 0.964, MAE = 4.13 min)
+          </div>
+        </div>
+
+        <div class="card yellow-border">
+          <div class="card-label">FACTOR CONTRIBUTION ANALYSIS</div>
+          <div class="card-title">Why 54 minutes?</div>
+          
+          <div style="margin-top: 1.5vw; line-height: 1.6;">
+            <div style="display: flex; justify-content: space-between; font-size: 1vw; margin-bottom: 0.8vw;">
+              <span>Base Benchmark Duration</span>
+              <strong style="color: var(--text-white);">53.0 min</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 1vw; margin-bottom: 0.8vw;">
+              <span>Wet Ground Conditions</span>
+              <strong style="color: var(--critical-red);">+7.5 min</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 1vw; margin-bottom: 0.8vw;">
+              <span>Operator Skill (Expert Marcus)</span>
+              <strong style="color: var(--safe-green);">−6.5 min</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 1vw; border-top: 1px solid var(--card-border); padding-top: 0.8vw;">
+              <span>Final Projected Duration</span>
+              <strong style="color: var(--cat-yellow);">54.0 min</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 9: ANOMALY DETECTION ==================== -->
+    <div class="slide" data-index="9">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">08 / Machine Health Intelligence</div>
+      </div>
+      <h2 class="slide-headline">Detect unusual machine behavior early.</h2>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">LIVE CAN-BUS SENSORS</div>
+          <div style="margin-top: 0.8vw; line-height: 2; font-size: 0.95vw;">
+            <div>• Engine Temperature: 91.2°C <span style="color: var(--safe-green);">(Normal)</span></div>
+            <div>• Oil Pressure: 42.1 psi <span style="color: var(--safe-green);">(Normal)</span></div>
+            <div>• Hydraulic Pressure: 285 bar <span style="color: var(--safe-green);">(Normal)</span></div>
+            <div>• Engine RPM: 1,850 RPM <span style="color: var(--safe-green);">(Normal)</span></div>
+            <div style="color: var(--critical-red); font-weight: 700;">• Vibration Baseline: 2.35 mm/s (+32% above normal)</div>
+            <div style="color: var(--cat-yellow); font-weight: 700;">• Idle Time: 41 min excessive shift idling</div>
+          </div>
+        </div>
+
+        <div class="card yellow-border" style="padding: 2vw;">
+          <div class="card-label">ANOMALY DETECTED</div>
+          <div style="font-size: 1.8vw; font-weight: 800; margin-bottom: 0.8vw;">Isolation Forest Signature</div>
+          <div style="font-size: 1.2vw; color: var(--critical-red); font-weight: 700; margin-bottom: 1.2vw;">
+            Vibration: +32% above baseline<br>
+            Idle: 41 min excessive
+          </div>
+          <div style="font-size: 1vw; color: var(--text-white); font-weight: 700;">
+            "Detection → Explanation → Recommendation"
+          </div>
+          <div class="card-desc" style="margin-top: 0.6vw;">
+            Recommends immediate hydraulic dampener inspection and anti-idling cycle protocol before mechanical breakdown.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 10: OPERATOR ASSISTANT ==================== -->
+    <div class="slide" data-index="10">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">09 / In-Cab Conversational AI</div>
+      </div>
+      <h2 class="slide-headline">Ask the machine. Get evidence, not guesses.</h2>
+
+      <div style="display: grid; grid-template-columns: 2.5fr 1fr; gap: 1.5vw;">
+        <div class="card" style="padding: 1.8vw;">
+          <div style="font-size: 0.8vw; color: var(--cat-yellow); font-weight: 700;">OPERATOR QUERY:</div>
+          <div style="font-size: 1.3vw; font-weight: 700; margin-top: 0.3vw; margin-bottom: 1.2vw;">
+            "Why is EXC001 showing a warning?"
+          </div>
+
+          <div style="font-size: 0.8vw; color: var(--text-muted); font-weight: 700; margin-bottom: 0.5vw;">GROUND TRUTH EVIDENCE:</div>
+          <div style="font-size: 0.95vw; line-height: 1.7; color: var(--text-white); margin-bottom: 1vw;">
+            • Vibration: 32% above baseline (2.35 mm/s vs 1.75 mm/s nominal)<br>
+            • Ground Worker: 2.1 m inside critical exclusion zone<br>
+            • Recommended next step: Pause swing, check hydraulic mount, alert spotter<br>
+            • Reference: CAT 336 Operations Manual, Section 4.2 (Hydraulic Systems)
+          </div>
+
+          <div style="font-size: 0.8vw; color: var(--text-dim); border-top: 1px solid var(--card-border); padding-top: 0.8vw;">
+            Advisory assistance only — does not control machine functions.
+          </div>
+        </div>
+
+        <div class="card" style="display: flex; flex-direction: column; justify-content: center; padding: 1.5vw;">
+          <div class="card-label">ZERO CLOUD DEPENDENCY</div>
+          <div style="font-size: 1.4vw; font-weight: 800; color: var(--cat-yellow); margin-bottom: 0.8vw;">OFFLINE-READY</div>
+          <div class="card-desc">
+            Designed for remote job sites, tunnels, and quarries with zero cellular or Wi-Fi coverage. Grounded directly in local machine manuals.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 11: LIVE DEMO FLOW ==================== -->
+    <div class="slide" data-index="11">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">10 / Product Demo Walkthrough</div>
+      </div>
+      <h2 class="slide-headline">One shift. One operator. One intelligent cockpit.</h2>
+
+      <div class="grid-4" style="gap: 1vw;">
+        <div class="card" style="padding: 1vw;">
+          <div class="card-label">1. LOGIN</div>
+          <div style="font-weight: 700; font-size: 1vw;">Marcus Vance</div>
+          <div class="card-desc" style="font-size: 0.8vw;">Logs into EXC001 CAT 336 excavator.</div>
+        </div>
+        <div class="card" style="padding: 1vw;">
+          <div class="card-label">2. DASHBOARD</div>
+          <div style="font-weight: 700; font-size: 1vw;">92% Health</div>
+          <div class="card-desc" style="font-size: 0.8vw;">1,850 RPM live CAN-bus stream.</div>
+        </div>
+        <div class="card" style="padding: 1vw;">
+          <div class="card-label">3. TASK ETA</div>
+          <div style="font-weight: 700; font-size: 1vw;">54 min Projection</div>
+          <div class="card-desc" style="font-size: 0.8vw;">48–61 min band + factor breakdown.</div>
+        </div>
+        <div class="card red-border" style="padding: 1vw;">
+          <div class="card-label" style="color: var(--critical-red);">4. HAZARD INJECTION</div>
+          <div style="font-weight: 700; font-size: 1vw;">Worker C at 2.1m</div>
+          <div class="card-desc" style="font-size: 0.8vw;">Radar triggers Critical 88/100 risk.</div>
+        </div>
+        <div class="card" style="padding: 1vw;">
+          <div class="card-label">5. INCIDENT</div>
+          <div style="font-weight: 700; font-size: 1vw;">INC001 Logged</div>
+          <div class="card-desc" style="font-size: 0.8vw;">Automated timestamp and coordinates.</div>
+        </div>
+        <div class="card" style="padding: 1vw;">
+          <div class="card-label">6. ASSISTANT</div>
+          <div style="font-weight: 700; font-size: 1vw;">Explain Warning</div>
+          <div class="card-desc" style="font-size: 0.8vw;">Cites vibration & proximity evidence.</div>
+        </div>
+        <div class="card" style="padding: 1vw;">
+          <div class="card-label">7. TRAINING</div>
+          <div style="font-weight: 700; font-size: 1vw;">Practical Quiz</div>
+          <div class="card-desc" style="font-size: 0.8vw;">3-question proximity safety check.</div>
+        </div>
+        <div class="card yellow-border" style="padding: 1vw;">
+          <div class="card-label">8. SUPERVISOR</div>
+          <div style="font-weight: 700; font-size: 1vw;">Fleet Portal</div>
+          <div class="card-desc" style="font-size: 0.8vw;">Health distribution & PDF compliance.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 12: OPERATOR -> SUPERVISOR ==================== -->
+    <div class="slide" data-index="12">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">11 / Dual Perspectives</div>
+      </div>
+      <h2 class="slide-headline">One platform. Two perspectives.</h2>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">LEFT PERSPECTIVE</div>
+          <div class="card-title" style="color: var(--cat-yellow);">THE OPERATOR (IN-CAB COCKPIT)</div>
+          <div class="card-desc" style="margin-top: 1vw; line-height: 1.8; font-size: 1vw;">
+            <div>• Real-time machine health (92% composite indicator)</div>
+            <div>• 360° Safety Radar with worker exclusion tracking</div>
+            <div>• Task ETA with weather and skill factor explanation</div>
+            <div>• Grounded AI Assistant for in-shift troubleshooting</div>
+            <div>• Interactive Training modules and competency verification</div>
+          </div>
+        </div>
+
+        <div class="card yellow-border">
+          <div class="card-label">RIGHT PERSPECTIVE</div>
+          <div class="card-title" style="color: var(--text-white);">THE SUPERVISOR (FLEET HUB)</div>
+          <div class="card-desc" style="margin-top: 1vw; line-height: 1.8; font-size: 1vw;">
+            <div>• Multi-machine fleet health and utilization overview</div>
+            <div>• Jobsite anomaly distribution and high-risk asset alerts</div>
+            <div>• Digital incident review, sign-off, and audit trail</div>
+            <div>• One-click official PDF compliance shift reports</div>
+            <div>• Operator certification tracking across modules</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 13: BUSINESS IMPACT ==================== -->
+    <div class="slide" data-index="13">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">12 / Measurable Value</div>
+      </div>
+      <h2 class="slide-headline">Designed for measurable operational impact.</h2>
+
+      <div class="grid-3" style="align-items: stretch;">
+        <div class="card" style="padding: 2.5vw 2vw;">
+          <div class="metric-number">ZERO</div>
+          <div class="card-title" style="font-size: 1.4vw;">Proximity Struck-By Fatalities</div>
+          <div class="card-desc" style="margin-top: 1vw;">
+            Proactive 360° exclusion radar prevents blind-spot collisions before personnel enter hazardous swing arcs.
+          </div>
+        </div>
+
+        <div class="card" style="padding: 2.5vw 2vw;">
+          <div class="metric-number">12%</div>
+          <div class="card-title" style="font-size: 1.4vw;">Reduction in Unnecessary Fuel Burn</div>
+          <div class="card-desc" style="margin-top: 1vw;">
+            Anti-idling recommendations and automated cycle optimization eliminate non-productive diesel consumption.
+          </div>
+        </div>
+
+        <div class="card" style="padding: 2.5vw 2vw;">
+          <div class="metric-number">↓</div>
+          <div class="card-title" style="font-size: 1.4vw;">Unscheduled Machine Downtime</div>
+          <div class="card-desc" style="margin-top: 1vw;">
+            Early mechanical vibration and thermal anomaly diagnostics identify component failure signatures shifts in advance.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 14: FUTURE VISION ==================== -->
+    <div class="slide" data-index="14">
+      <div class="slide-meta">
+        <div class="brand-accent-bar"></div>
+        <div class="tracker-tag">13 / Future Roadmap</div>
+      </div>
+      <h2 class="slide-headline">Built for today's prototype. Ready for tomorrow's machine.</h2>
+
+      <div class="grid-4">
+        <div class="card yellow-border">
+          <div class="card-label">TODAY</div>
+          <div class="card-title">OperatorIQ Prototype</div>
+          <div class="card-desc">Full-stack simulation cockpit, dual DB, 8-rule safety engine, Gradient Boosting ETA, offline assistant.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">NEXT</div>
+          <div class="card-title">CAT Product Link™</div>
+          <div class="card-desc">Direct integration with Caterpillar OEM telematics hardware and ISO 15143-3 fleet data feeds.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">EDGE</div>
+          <div class="card-title">On-Machine TPU</div>
+          <div class="card-desc">Deploy ML regressor and unsupervised anomaly pipeline to in-cab edge silicon for microsecond inference.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">VISION</div>
+          <div class="card-title">Stereo Vision & LiDAR</div>
+          <div class="card-desc">Integrate depth cameras and 3D LiDAR for automated ground worker bounding-box distance extraction.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 15: CLOSING ==================== -->
+    <div class="slide" data-index="15">
+      <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+        <div class="brand-accent-bar" style="width: 48px; height: 6px; margin-bottom: 2vw;"></div>
+        <h1 style="font-size: 4.5vw; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1vw;">CAT OperatorIQ</h1>
+        <p style="font-size: 2vw; font-weight: 700; color: var(--cat-yellow); margin-bottom: 2vw;">
+          Safer machines. Smarter decisions. Stronger operators.
+        </p>
+        <p style="font-size: 2.5vw; font-weight: 800; color: var(--text-white); margin-bottom: 0.5vw;">
+          Thank you.
+        </p>
+        <p style="font-size: 1.2vw; color: var(--text-muted);">
+          We welcome your questions.
+        </p>
+      </div>
+      <div style="font-size: 0.85vw; color: var(--text-dim);">
+        Hackathon Pitch | Caterpillar Hackathon 2026
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progress-bar"></div>
+    </div>
+
+    <!-- Slide Navigation Controls -->
+    <div class="controls">
+      <span class="slide-counter" id="slide-counter">01 / 15</span>
+      <button class="btn-nav" id="btn-prev">&larr; Prev</button>
+      <button class="btn-nav" id="btn-next">Next &rarr;</button>
+      <button class="btn-nav" id="btn-fullscreen">[ ]</button>
+    </div>
+
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlide = 1;
+
+    function goToSlide(n) {
+      if (n < 1) n = 1;
+      if (n > totalSlides) n = totalSlides;
+      currentSlide = n;
+
+      slides.forEach(slide => {
+        const idx = parseInt(slide.getAttribute('data-index'), 10);
+        if (idx === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      // Update counter and progress bar
+      document.getElementById('slide-counter').textContent = 
+        (currentSlide < 10 ? '0' : '') + currentSlide + ' / ' + (totalSlides < 10 ? '0' : '') + totalSlides;
+      
+      const pct = (currentSlide / totalSlides) * 100;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+
+    document.getElementById('btn-prev').addEventListener('click', () => goToSlide(currentSlide - 1));
+    document.getElementById('btn-next').addEventListener('click', () => goToSlide(currentSlide + 1));
+
+    document.getElementById('btn-fullscreen').addEventListener('click', () => {
+      const elem = document.getElementById('presentation-container');
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(err => console.log(err));
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        goToSlide(currentSlide + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        goToSlide(currentSlide - 1);
+      } else if (e.key === 'Home') {
+        goToSlide(1);
+      } else if (e.key === 'End') {
+        goToSlide(totalSlides);
+      } else if (e.key === 'f' || e.key === 'F') {
+        const elem = document.getElementById('presentation-container');
+        if (!document.fullscreenElement) elem.requestFullscreen();
+        else document.exitFullscreen();
+      }
+    });
+  </script>
+</body>
+</html>

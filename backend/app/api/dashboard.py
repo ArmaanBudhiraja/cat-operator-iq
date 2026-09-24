@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime, timedelta
 from backend.app.db.database import get_db
-from backend.app.db.models import Task, Machine, Operator, Telemetry, SafetyEvent, TrainingProgress
+from backend.app.db.models import Task, Machine, Operator, Telemetry, SafetyEvent, TrainingProgress, TrainingCourse
 from backend.app.services.simulation_service import simulation_manager
 from backend.app.services.weather_service import WeatherService
 from backend.app.config import settings
@@ -58,7 +58,7 @@ def get_dashboard_data(operator_id: str = "OP001", machine_id: str = "EXC001", d
         TrainingProgress.operator_id == operator_id,
         TrainingProgress.completion_status == "Completed"
     ).count()
-    total_courses = max(1, db.query(TrainingProgress).filter(TrainingProgress.operator_id == operator_id).count())
+    total_courses = max(1, db.query(TrainingCourse).count())
     training_pct = round((completed_courses / total_courses) * 100.0, 1)
 
     # 4. Simulation live telemetry state
