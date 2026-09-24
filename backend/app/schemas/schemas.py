@@ -210,6 +210,9 @@ class AssistantQueryResponse(BaseModel):
     recommended_next_step: str
     safety_disclaimer: str
     citations: list[str] = []
+    is_fallback: bool = False
+    ai_provider: str = "Live AI"
+    fallback_reason: str | None = None
 
 # Simulation Trigger
 class SimulationHazardRequest(BaseModel):

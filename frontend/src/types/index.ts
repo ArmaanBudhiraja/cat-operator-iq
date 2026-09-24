@@ -203,6 +203,8 @@ export interface DashboardData {
     temperature_c: number;
     wind_speed_kmh: number;
     humidity_pct: number;
+    is_live?: boolean;
+    source?: string;
   };
   kpis: {
     today_tasks: number;
@@ -216,4 +218,24 @@ export interface DashboardData {
   };
   active_alerts: SafetyAlert[];
   safety_disclaimer: string;
+}
+
+export interface AssistantStatus {
+  ai_configured: boolean;
+  provider: string;
+  fallback_available: boolean;
+  fallback_mode: string;
+  weather_configured: boolean;
+}
+
+export interface AssistantQueryResponse {
+  question: string;
+  answer: string;
+  evidence: string[];
+  recommended_next_step: string;
+  safety_disclaimer: string;
+  citations: string[];
+  is_fallback?: boolean;
+  ai_provider?: string;
+  fallback_reason?: string | null;
 }

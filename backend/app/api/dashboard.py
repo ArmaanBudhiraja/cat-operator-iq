@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from backend.app.db.database import get_db
 from backend.app.db.models import Task, Machine, Operator, Telemetry, SafetyEvent, TrainingProgress
 from backend.app.services.simulation_service import simulation_manager
+from backend.app.services.weather_service import WeatherService
 from backend.app.config import settings
 
 router = APIRouter(prefix="/api/dashboard", tags=["Dashboard"])
@@ -109,12 +110,7 @@ def get_dashboard_data(operator_id: str = "OP001", machine_id: str = "EXC001", d
         "safety_score": sim_state["safety_score"],
         "risk_level": sim_state["risk_level"],
         "operator_status": "FATIGUE WARNING" if sim_state["telemetry"]["fatigue_indicator"] >= 0.7 else "NORMAL",
-        "weather": {
-            "condition": "Sunny",
-            "temperature_c": 32,
-            "wind_speed_kmh": 11,
-            "humidity_pct": 42
-        },
+        "weather": WeatherService.get_weather(),
         "kpis": {
             "today_tasks": total_tasks_today,
             "completed_tasks": completed_tasks,

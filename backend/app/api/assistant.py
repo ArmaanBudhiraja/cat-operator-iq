@@ -8,6 +8,10 @@ from backend.app.services.simulation_service import simulation_manager
 
 router = APIRouter(prefix="/api/assistant", tags=["AI Assistant"])
 
+@router.get("/status")
+def get_assistant_status():
+    return AssistantService.get_status()
+
 @router.post("/query", response_model=AssistantQueryResponse)
 def query_assistant(req: AssistantQueryRequest, db: Session = Depends(get_db)):
     operator = db.query(Operator).filter(Operator.operator_id == req.operator_id).first()
@@ -57,5 +61,8 @@ def query_assistant(req: AssistantQueryRequest, db: Session = Depends(get_db)):
         evidence=result["evidence"],
         recommended_next_step=result["recommended_next_step"],
         safety_disclaimer=result["safety_disclaimer"],
-        citations=result["citations"]
+        citations=result["citations"],
+        is_fallback=result.get("is_fallback", False),
+        ai_provider=result.get("ai_provider", "Live AI"),
+        fallback_reason=result.get("fallback_reason")
     )

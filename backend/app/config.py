@@ -2,10 +2,15 @@ import os
 from pathlib import Path
 from pydantic import BaseModel
 
+from dotenv import load_dotenv
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DATA_DIR = BASE_DIR / "data"
 MODELS_DIR = BASE_DIR / "models"
 KNOWLEDGE_BASE_DIR = BASE_DIR / "knowledge_base"
+
+# Load .env file from root of project
+load_dotenv(BASE_DIR / ".env", override=True)
 
 # Ensure directories exist
 DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -19,9 +24,10 @@ class Settings(BaseModel):
         "AI-generated recommendations are advisory and must not replace official "
         "operating procedures, safety procedures, operator training, or professional judgment."
     )
-    DATABASE_URL: str = os.getenv("DATABASE_URL", f"sqlite:///{DATA_DIR}/cat_operator_iq.db")
-    OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY", None)
-    WEATHER_API_KEY: str | None = os.getenv("WEATHER_API_KEY", None)
+    DATABASE_URL: str = os.getenv("DATABASE_URL") or f"sqlite:///{DATA_DIR}/cat_operator_iq.db"
+    OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY") or None
+    WEATHER_API_KEY: str | None = os.getenv("WEATHER_API_KEY") or None
+    LLM_MODEL: str = os.getenv("LLM_MODEL") or "gemini-3.6-flash"
     CORS_ORIGINS: list[str] = ["*"]
     RANDOM_SEED: int = int(os.getenv("RANDOM_SEED", 42))
 

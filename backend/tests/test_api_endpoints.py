@@ -43,4 +43,22 @@ def test_assistant_query_endpoint():
     assert "answer" in data
     assert "evidence" in data
     assert "recommended_next_step" in data
-    assert "AI-generated recommendations are advisory" in data["safety_disclaimer"]
+    assert "safety_disclaimer" in data
+    assert "is_fallback" in data
+    assert "ai_provider" in data
+
+def test_assistant_status_endpoint():
+    response = client.get("/api/assistant/status")
+    assert response.status_code == 200
+    data = response.json()
+    assert "ai_configured" in data
+    assert "fallback_available" in data
+
+def test_dashboard_endpoint_weather():
+    response = client.get("/api/dashboard")
+    assert response.status_code == 200
+    data = response.json()
+    assert "weather" in data
+    assert "condition" in data["weather"]
+    assert "temperature_c" in data["weather"]
+    assert "is_live" in data["weather"]

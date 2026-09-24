@@ -130,9 +130,19 @@ export const DashboardPage: React.FC = () => {
         {/* Operating Conditions Triad */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 border-t border-[#E5E5E5] text-xs">
           <div>
-            <span className="text-xs text-[#737373] block">Weather</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-[#737373]">Weather</span>
+              {data.weather.is_live && (
+                <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  LIVE
+                </span>
+              )}
+            </div>
             <span className="text-[#171717] font-medium text-sm mt-0.5 block">{data.weather.condition}</span>
-            <span className="text-[#737373] text-xs tabular-nums">{data.weather.temperature_c}°C · {data.weather.wind_speed_kmh} km/h</span>
+            <span className="text-[#737373] text-xs tabular-nums">
+              {data.weather.temperature_c}°C · {data.weather.wind_speed_kmh} km/h
+              {data.weather.source ? ` · ${data.weather.source}` : ''}
+            </span>
           </div>
 
           <div>

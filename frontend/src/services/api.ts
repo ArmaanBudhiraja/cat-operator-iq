@@ -1,6 +1,7 @@
 import {
   DashboardData, TaskItem, MachineItem, OperatorItem,
-  LiveTelemetryState, IncidentItem, AnomalyItem, TrainingCourse
+  LiveTelemetryState, IncidentItem, AnomalyItem, TrainingCourse,
+  AssistantStatus, AssistantQueryResponse
 } from '../types';
 
 const API_BASE = '/api';
@@ -155,7 +156,13 @@ export const api = {
   },
 
   // AI Assistant
-  async queryAssistant(query: string, operatorId = 'OP001', machineId = 'EXC001') {
+  async getAssistantStatus(): Promise<AssistantStatus> {
+    const res = await fetch(`${API_BASE}/assistant/status`);
+    if (!res.ok) throw new Error('Failed to load assistant status');
+    return res.json();
+  },
+
+  async queryAssistant(query: string, operatorId = 'OP001', machineId = 'EXC001'): Promise<AssistantQueryResponse> {
     const res = await fetch(`${API_BASE}/assistant/query`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
