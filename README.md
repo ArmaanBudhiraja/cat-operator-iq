@@ -159,7 +159,7 @@ cat-operator-iq/
 
 ---
 
-## Machine Health Calcumation
+## Machine Health Calculation
 
 Individual Data Machine Health
 ```bash
