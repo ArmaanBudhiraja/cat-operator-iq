@@ -159,7 +159,26 @@ cat-operator-iq/
 
 ---
 
-## ⚡ Quickstart Guide (Local Execution)
+## Machine Health Calcumation
+
+Individual Data Machine Health
+```bash
+health_temp = max(0, 100 - max(0, (temp - 88) * 3.5))
+health_vib  = max(0, 100 - max(0, (vib - 1.75) * 25))
+health_oil  = max(0, 100 - max(0, (43 - oil) * 3))
+health_maint = max(0, 100 - (maint_days * 0.4))
+```
+
+Cummulative Machine Health
+```bash
+Machine Health = 
+25% Temperature Health
++ 25% Vibration Health
++ 25% Oil Pressure Health
++ 25% Maintenance Health
+```
+
+## Quickstart Guide (Local Execution)
 
 ### Prerequisites
 - Python 3.10+ (tested on Python 3.12)
@@ -210,7 +229,7 @@ npm run dev
 
 ---
 
-## 🐳 Running with Docker Compose
+## Running with Docker Compose
 
 To launch the complete multi-container stack with PostgreSQL 16:
 ```bash
@@ -222,7 +241,7 @@ docker-compose up --build
 
 ---
 
-## 🎯 9-Scene Hackathon Demonstration Script
+## 9-Scene Hackathon Demonstration Script
 
 For presentation to judges, execute this seamless 2-minute narrative:
 
@@ -243,7 +262,7 @@ For presentation to judges, execute this seamless 2-minute narrative:
 
 ---
 
-## 📊 Machine Learning Model Details
+## Machine Learning Model Details
 
 | Model Domain | Algorithm | Validation MAE / Metric | Features Evaluated | Artifact Saved |
 | :--- | :--- | :--- | :--- | :--- |
@@ -252,7 +271,7 @@ For presentation to judges, execute this seamless 2-minute narrative:
 
 ---
 
-## 🛡️ Transparent 8-Rule Safety Scoring
+## Transparent 8-Rule Safety Scoring
 
 The Safety Risk Score evaluates between **0 and 100 points**:
 - `0 - 30`: **LOW** (Safe / Normal Operation)
@@ -264,15 +283,9 @@ $$\text{Risk Score} = \text{Seatbelt} (35) + \text{Proximity} (45) + \text{Fatig
 
 ---
 
-## 🔮 Future Scalability Roadmap
+## Future Scalability Roadmap
 
 1. **Direct CAN-Bus Hardware Tap**: Integration with Caterpillar Product Link™ PLE641 telematics and J1939 CAN-bus protocols.
 2. **On-Machine Edge Inference**: Exporting models to ONNX and TensorRT for deployment onto in-cab ruggedized Edge TPUs with sub-10ms latency.
 3. **Computer Vision Fusion**: Replacing simulated worker distance tags with real-time stereo camera and LiDAR 3D bounding-box detection (YOLOv10 / ByteTrack).
 4. **Digital Twin Integration**: Real-time 3D telemetry visualization connected with Caterpillar MineStar™ and Trimble earthmoving telematics.
-
----
-
-## 📜 License
-Developed for the Caterpillar Software Engineer Hackathon. Advisory software only.
-# cat-operator-iq
