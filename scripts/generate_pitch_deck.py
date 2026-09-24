@@ -8,7 +8,7 @@ from pptx.enum.shapes import MSO_SHAPE
 def create_deck(output_path="docs/CAT_OperatorIQ_Pitch_Deck.pptx"):
     prs = Presentation()
     prs.slide_width = Inches(13.333)
-    prs.slide_height = Inches(7.5)
+    prs.slide_height = Inches(7.5) 
     blank_layout = prs.slide_layouts[6] # blank layout
 
     # Colors
