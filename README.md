@@ -28,7 +28,7 @@ An industrial-grade operator assistance command center and fleet intelligence sy
 
 ---
 
-## 🏗️ Architecture & Tech Stack
+## Architecture & Tech Stack
 
 ```
 Frontend (React 18 + TypeScript + Vite + Tailwind CSS + Recharts)
@@ -51,7 +51,7 @@ Frontend (React 18 + TypeScript + Vite + Tailwind CSS + Recharts)
 
 ---
 
-## 📂 Project Repository Tree
+## Project Repository Tree
 
 ```
 cat-operator-iq/
